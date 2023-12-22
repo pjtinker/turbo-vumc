@@ -12,7 +12,9 @@ class AutomobileController extends Controller
      */
     public function index()
     {
-        //
+        return view('automobiles.index', [
+            'automobiles' => Automobile::with('driver')->latest()->get()
+        ]);
     }
 
     /**

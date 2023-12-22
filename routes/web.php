@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\DriverController;
+use App\Http\Controllers\AutomobileController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProfilePasswordController;
 use Illuminate\Support\Facades\Route;
@@ -24,8 +25,14 @@ Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
+Route::get('drivers._driver', [DriverController::class, 'show'])->name('drivers._driver')->middleware(['auth', 'verified']);
+    
 Route::resource('drivers', DriverController::class)
     ->middleware(['auth', 'verified']); 
+
+Route::resource('automobiles', AutomobileController::class)
+    ->middleware(['auth', 'verified']);
+
 
 
 Route::middleware('auth')->group(function () {

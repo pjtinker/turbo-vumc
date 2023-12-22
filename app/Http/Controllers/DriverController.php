@@ -36,9 +36,23 @@ class DriverController extends Controller
             'years_of_experience' => ['required', 'integer', 'min:0'],
             'can_drive_manual' => ['required', 'boolean']
         ]);
-        Driver::create($validatedData);
+        $driver = Driver::create($validatedData);
 
-        return redirect()->route('drivers.index')->with('notice', __('Driver created.'));  
+        $html = view('drivers.partials.details', compact('driver'))->render();
+
+        
+        // return response()->stream(function () use ($html, $driver) {
+        //     echo "<turbo-stream action='replace' target='driver_edit_{$driver->id}'>
+        //             <template>
+        //                 $html
+        //             </template>
+        //           </turbo-stream>";
+        // }, 200, ['Content-Type' => 'text/vnd.turbo-stream.html']);
+
+        return redirect()->route('drivers.show', [
+            'driver' => $driver,
+            'automobiles' => $driver->automobile
+        ])->with('notice', __('Driver created.')); 
         
     }
 
@@ -75,8 +89,23 @@ class DriverController extends Controller
         ]);
 
         $driver->update($validatedData);
+ 
+        // if ($request->wantsTurboStream()) {
+        //     $html = view('drivers.partials.details', compact('driver'))->render();
 
-        return redirect()->route('drivers.index')->with('notice', __('Driver updated.'));  
+        //     // Create a Turbo Stream response
+        //     return response()->stream(function () use ($html, $driver) {
+        //         echo "<turbo-stream action='replace' target='driver_edit_{$driver->id}'>
+        //                 <template>
+        //                     $html
+        //                 </template>
+        //               </turbo-stream>";
+        //     }, 200, ['Content-Type' => 'text/vnd.turbo-stream.html']);
+        // }
+        return redirect()->route('drivers.show', [
+            'driver' => $driver,
+            'automobiles' => $driver->automobile
+        ])->with('notice', __('Driver updated.'));  
     }
 
     /**
@@ -84,6 +113,8 @@ class DriverController extends Controller
      */
     public function destroy(Driver $driver)
     {
-        //
+        $driver->delete();
+
+        return redirect()->route('drivers.index')->with('notice', __('Driver deleted.'));
     }
 }

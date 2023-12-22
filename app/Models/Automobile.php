@@ -15,7 +15,8 @@ class Automobile extends Model
         'model',
         'year',
         'number_of_cylinders',
-        'automatic'
+        'automatic',
+        'avatar_url'
     ];
 
     public function driver()

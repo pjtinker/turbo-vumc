@@ -7,15 +7,30 @@
  
     <div class="py-12">
         <div class="max-w-2xl mx-auto sm:px-6 lg:px-8 space-y-6">
+            @include('drivers.partials.new-driver-trigger')
             <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
                 <div class="max-w-xl mx-auto">
-                    @include('drivers.partials.new-driver-trigger')
-                    <ul role="list" class="divide-y divide-gray-100">
+                    <ul id="drivers" role="list" class="divide-y divide-gray-100">
                         @foreach ($drivers as $driver)
-                            <li class="p-4 hover:bg-gray-50">
+                            <li class="p-4 hover:bg-blue-950">
                                 <div class="flex">
                                     <div class="flex-shrink-0">
-                                        <img class="w-40 h-40 rounded-full" src="{{ $driver->avatar_url }}" alt="">
+                                        @if ($driver->avatar_url)
+                                            <img class="w-40 h-40 rounded-full" src="{{ $driver->avatar_url }}" alt="Avatar">
+                                        @else
+                                            @php
+                                                $names = explode(' ', $driver->name);
+                                                $initials = '';
+                                                foreach ($names as $name) {
+                                                    if (!empty($name)) {
+                                                        $initials .= $name[0];
+                                                    }
+                                                }
+                                            @endphp     
+                                            <div class="w-40 h-40 rounded-full bg-gray-300 text-gray-500 flex justify-center items-center text-6xl font-semibold">
+                                                {{ strtoupper($initials) }}
+                                            </div>
+                                        @endif
                                     </div>
                                     <div class="ml-3">
                                         <p class="text-sm font-medium text-white">
@@ -25,7 +40,7 @@
                                             {{ $driver->email }}
                                         </p>
                                         <p class="text-sm text-gray-500">
-                                            {{ $driver->years_of_experience }}
+                                            Currently driving: {{ $driver->currently_driving_string }}
                                         </p>
                                     </div>
                                     <div class="ml-auto">
