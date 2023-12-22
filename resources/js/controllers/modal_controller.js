@@ -15,6 +15,7 @@ export default class extends Controller {
     }
 
     open() {
+        console.log('*** open fired');
         this.openValue = true
     }
 

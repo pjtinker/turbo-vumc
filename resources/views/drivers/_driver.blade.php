@@ -12,7 +12,7 @@
                     <div class="max-w-2xl mx-auto">
                         @include('drivers.partials.details')
                     </div>
-                {{-- </turbo-frame> --}}
+                {{-- </turbo-frame> --}}         
                 <div class="max-w-2xl mx-auto">
                     @if(isset($driver->automobiles) && $driver->automobiles->count())
                         @include('automobiles.partials.list-automobiles', ['automobiles' => $driver->automobiles])

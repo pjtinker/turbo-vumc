@@ -11,6 +11,7 @@
 
             <x-slot name="content">
                 <x-dropdown-link href="{{ route('drivers.edit', $driver) }}">{{ __('Edit') }}</x-dropdown-link>
+                <x-dropdown-link href="{{ route('drivers.automobiles.assign', ['driver_id' => $driver->id]) }}">{{ __('Assign Automobile') }}</x-dropdown-link>
                 <form action="{{ route('drivers.destroy', $driver) }}" method="POST">
                     @method('DELETE')
                     <x-dropdown-danger-button disabled="{{ isset($driver->automobiles) && $driver->automobiles->count() ? 'true' : 'false' }}" type="submit">{{ __('Delete') }}</x-dropdown-danger-button>

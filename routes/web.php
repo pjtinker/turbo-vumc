@@ -5,6 +5,8 @@ use App\Http\Controllers\AutomobileController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProfilePasswordController;
 use Illuminate\Support\Facades\Route;
+use App\Models\Automobile;
+use App\Models\Driver;
 
 /*
 |--------------------------------------------------------------------------
@@ -26,9 +28,19 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::get('drivers._driver', [DriverController::class, 'show'])->name('drivers._driver')->middleware(['auth', 'verified']);
-    
+Route::post('drivers/automobiles/assign/{driver_id}', [DriverController::class, 'assignAutomobile'])->name('drivers.automobiles.assign')->middleware(['auth', 'verified']);
+
+Route::get('drivers/automobiles/assign/{driver_id}', function(string $driver_id) {
+    $driver = Driver::findOrFail($driver_id);
+    $builder = Automobile::where('driver_id', $driver_id)->orWhereNull('driver_id');
+    if (!$driver->can_drive_manual) {
+        $builder->where('automatic', true);
+    }
+    return view('drivers.partials.assign-automobile', ['driver' => $driver, 'automobiles' => $builder->get()]);
+})->name('drivers.automobiles.assign')->middleware(['auth', 'verified']);
+
 Route::resource('drivers', DriverController::class)
-    ->middleware(['auth', 'verified']); 
+    ->middleware(['auth', 'verified']);
 
 Route::resource('automobiles', AutomobileController::class)
     ->middleware(['auth', 'verified']);

@@ -43,15 +43,11 @@ class Driver extends Model
             $currently_driving[] = $automobile->make . ' ' . $automobile->model;
         }
 
-        switch (count($currently_driving)) {
-            case 0:
-                return 'None';
-            case 1:
-                return $currently_driving[0];
-            case 2:
-                return implode(' and ', $currently_driving);
-            default:
-                return $currently_driving[0] + ', ' + $currently_driving[1] + ' and ' + count($currently_driving) - 2 + ' more';
-        }
+        return match (count($currently_driving)) {
+            0 => 'None',
+            1 => $currently_driving[0],
+            2 => implode(' and ', $currently_driving),
+            default => $currently_driving[0] . ', ' . $currently_driving[1] . ', and ' . (count($currently_driving) - 2) . ' more',
+        };
     }
 }

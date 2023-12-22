@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Driver;
+use App\Models\Automobile;
 use Illuminate\Http\Request;
 
 class DriverController extends Controller
@@ -116,5 +117,29 @@ class DriverController extends Controller
         $driver->delete();
 
         return redirect()->route('drivers.index')->with('notice', __('Driver deleted.'));
+    }
+
+    public function assignAutomobile(Request $request, string $driverId)
+    {
+
+        $driver = Driver::findOrFail($driverId);
+        if ($driver->automobiles()->count() > 0) {
+            $driver->automobiles()->update(['driver_id' => null]);
+        }
+
+        $validatedData = $request->validate([
+            'automobiles' => ['array'],
+            'automobiles.*' => ['exists:automobiles,id']
+        ]);
+        
+        $automobiles = $request->get('automobiles', []);
+        if (count($automobiles)) {
+            $driver->automobiles()->saveMany(Automobile::findMany($automobiles));
+        }
+
+        return redirect()->route('drivers.show', [
+            'driver' => $driver,
+            'automobiles' => $driver->automobiles
+        ])->with('notice', __('Automobile assigned.'));
     }
 }
