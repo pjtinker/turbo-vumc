@@ -38,7 +38,9 @@ class AutomobileController extends Controller
      */
     public function show(Automobile $automobile)
     {
-        //
+        return view('automobiles._automobile', [
+            'automobile' => $automobile->load('driver')
+        ]);
     }
 
     /**

@@ -14,24 +14,7 @@
                         @foreach ($drivers as $driver)
                             <li class="p-4 hover:bg-blue-950">
                                 <div class="flex">
-                                    <div class="flex-shrink-0">
-                                        @if ($driver->avatar_url)
-                                            <img class="w-40 h-40 rounded-full" src="{{ $driver->avatar_url }}" alt="Avatar">
-                                        @else
-                                            @php
-                                                $names = explode(' ', $driver->name);
-                                                $initials = '';
-                                                foreach ($names as $name) {
-                                                    if (!empty($name)) {
-                                                        $initials .= $name[0];
-                                                    }
-                                                }
-                                            @endphp     
-                                            <div class="w-40 h-40 rounded-full bg-gray-300 text-gray-500 flex justify-center items-center text-6xl font-semibold">
-                                                {{ strtoupper($initials) }}
-                                            </div>
-                                        @endif
-                                    </div>
+                                    @include('partials.avatar', ['item' => $driver])
                                     <div class="ml-3">
                                         <p class="text-sm font-medium text-white">
                                             {{ $driver->name}}

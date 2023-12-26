@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\HasUnsplashAvatar;
 
 class Driver extends Model
 {
-    use HasFactory;
+    use HasFactory, HasUnsplashAvatar;
 
     protected $fillable = [
         'name',
@@ -49,5 +50,15 @@ class Driver extends Model
             2 => implode(' and ', $currently_driving),
             default => $currently_driving[0] . ', ' . $currently_driving[1] . ', and ' . (count($currently_driving) - 2) . ' more',
         };
+    }
+
+    public function unassignManualAutomobiles()
+    {
+        if ($this->wasChanged('can_drive_manual') && !$this->can_drive_manual) {
+            $count = $this->automobiles()->where('automatic', false)->count();
+            $this->automobiles()->where('automatic', false)->update(['driver_id' => null]);
+            return $count;
+        }
+        return 0;
     }
 }

@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\HasUnsplashAvatar;
 
 class Automobile extends Model
 {
-    use HasFactory;
+    use HasFactory, HasUnsplashAvatar;
 
     protected $fillable = [
         'driver_id',

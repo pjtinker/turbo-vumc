@@ -4,7 +4,7 @@
             <li class="p-4 hover:bg-blue-950">
                 <div class="flex">
                     <div class="flex-shrink-0">
-                        <img class="w-40 h-40 rounded-full" src="{{ $automobile->avatar_url }}" alt="">
+                       @include('partials.avatar', ['item' => $automobile, 'type' => 'automobile'])
                     </div>
                     <div class="ml-3">
                         <p class="text-sm font-medium text-white">

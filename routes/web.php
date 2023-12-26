@@ -42,10 +42,21 @@ Route::get('drivers/automobiles/assign/{driver_id}', function(string $driver_id)
 Route::resource('drivers', DriverController::class)
     ->middleware(['auth', 'verified']);
 
+Route::get('automobiles._automobile', [AutomobileController::class, 'show'])->name('automobiles._automobile')->middleware(['auth', 'verified']);
+Route::get('automobiles/driver/assign/{automobile_id}', function(string $automobile_id) {
+
+    $automobile = Automobile::findOrFail($automobile_id);
+
+    $builder = Driver::query();
+    if (!$automobile->automatic) {
+        $builder->where('can_drive_manual', true);
+    }
+
+    return view('automobiles.partials.assign-driver', ['automobile' => $automobile, 'drivers' => $builder->get()]);
+})->name('automobile.drivers.assign')->middleware(['auth', 'verified']);
+
 Route::resource('automobiles', AutomobileController::class)
     ->middleware(['auth', 'verified']);
-
-
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');

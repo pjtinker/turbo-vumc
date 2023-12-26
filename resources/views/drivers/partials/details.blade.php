@@ -1,6 +1,6 @@
 <div>
     <div class="grid grid-cols-1 gap-6 mt-4 sm:grid-cols-1">
-        @include('drivers.partials.avatar')
+        @include('partials.avatar', ['item' => $driver])
         
         <div>
             <x-input-label class="text-gray-700 text-gray-900" for="name">Name</x-input-label>

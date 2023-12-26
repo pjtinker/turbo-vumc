@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Driver;
+use App\Traits\HasUnsplashAvatar;
 use App\Models\Automobile;
 use Illuminate\Http\Request;
 
@@ -37,18 +38,11 @@ class DriverController extends Controller
             'years_of_experience' => ['required', 'integer', 'min:0'],
             'can_drive_manual' => ['required', 'boolean']
         ]);
+
         $driver = Driver::create($validatedData);
+        $driver->setRandomUnsplashAvatar();
 
         $html = view('drivers.partials.details', compact('driver'))->render();
-
-        
-        // return response()->stream(function () use ($html, $driver) {
-        //     echo "<turbo-stream action='replace' target='driver_edit_{$driver->id}'>
-        //             <template>
-        //                 $html
-        //             </template>
-        //           </turbo-stream>";
-        // }, 200, ['Content-Type' => 'text/vnd.turbo-stream.html']);
 
         return redirect()->route('drivers.show', [
             'driver' => $driver,
@@ -90,23 +84,19 @@ class DriverController extends Controller
         ]);
 
         $driver->update($validatedData);
- 
-        // if ($request->wantsTurboStream()) {
-        //     $html = view('drivers.partials.details', compact('driver'))->render();
+        $count = $driver->unassignManualAutomobiles();
 
-        //     // Create a Turbo Stream response
-        //     return response()->stream(function () use ($html, $driver) {
-        //         echo "<turbo-stream action='replace' target='driver_edit_{$driver->id}'>
-        //                 <template>
-        //                     $html
-        //                 </template>
-        //               </turbo-stream>";
-        //     }, 200, ['Content-Type' => 'text/vnd.turbo-stream.html']);
-        // }
+        $autoChangeNotice = $count > 0
+            ? __('Driver can no longer drive manual - :count manual :vehicle unassigned.', [
+                'count' => $count,
+                'vehicle' => $count > 1 ? 'vehicles were' : 'vehicle was'
+            ])
+            : '';
+
         return redirect()->route('drivers.show', [
             'driver' => $driver,
             'automobiles' => $driver->automobile
-        ])->with('notice', __('Driver updated.'));  
+        ])->with('notice', __('Driver updated.') . ' ' . $autoChangeNotice);
     }
 
     /**
@@ -114,6 +104,7 @@ class DriverController extends Controller
      */
     public function destroy(Driver $driver)
     {
+        $driver->automobiles()->update(['driver_id' => null]);
         $driver->delete();
 
         return redirect()->route('drivers.index')->with('notice', __('Driver deleted.'));
@@ -123,6 +114,7 @@ class DriverController extends Controller
     {
 
         $driver = Driver::findOrFail($driverId);
+
         if ($driver->automobiles()->count() > 0) {
             $driver->automobiles()->update(['driver_id' => null]);
         }

@@ -7,7 +7,7 @@
     <div class="py-12">
         <div class="max-w-2xl mx-auto sm:px-6 lg:px-8 space-y-6">
             <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
-                @include('drivers.partials.edit-driver-trigger')
+                @include('partials.edit-trigger', ['item' => $driver])
                 {{-- <turbo-frame id="driver_edit_{{ $driver->id }}"> --}}
                     <div class="max-w-2xl mx-auto">
                         @include('drivers.partials.details')
@@ -15,6 +15,9 @@
                 {{-- </turbo-frame> --}}         
                 <div class="max-w-2xl mx-auto">
                     @if(isset($driver->automobiles) && $driver->automobiles->count())
+                        <h2 class="text-lg text-gray-500">
+                            {{ __('Currently Driving:') }}
+                        </h2>
                         @include('automobiles.partials.list-automobiles', ['automobiles' => $driver->automobiles])
                     @endif
                 </div>
