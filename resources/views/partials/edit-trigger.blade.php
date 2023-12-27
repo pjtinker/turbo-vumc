@@ -6,14 +6,14 @@
             $editRoute = 'drivers.edit';
             $assignedRoute = 'drivers.automobiles.assign';
             $deleteRoute = 'drivers.destroy';
-            $id = 'driver_id';
+            $id = 'driver';
             $actionNoun = 'Automobiles';
             break;
         case "App\Models\Automobile":
             $editRoute = 'automobiles.edit';
             $assignedRoute = 'automobile.drivers.assign';
             $deleteRoute = 'automobiles.destroy';
-            $id = 'automobile_id';
+            $id = 'automobile';
             $actionNoun = 'Driver';
             break;
     }

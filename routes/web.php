@@ -27,12 +27,12 @@ Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
+Route::get('drivers/get_driver_select', [DriverController::class, 'getDriverSelect'])->name('drivers.index')->middleware(['auth', 'verified']);
 Route::get('drivers._driver', [DriverController::class, 'show'])->name('drivers._driver')->middleware(['auth', 'verified']);
-Route::post('drivers/automobiles/assign/{driver_id}', [DriverController::class, 'assignAutomobile'])->name('drivers.automobiles.assign')->middleware(['auth', 'verified']);
+Route::post('drivers/automobiles/assign/{driver}', [DriverController::class, 'assignAutomobile'])->name('drivers.automobiles.assign')->middleware(['auth', 'verified']);
 
-Route::get('drivers/automobiles/assign/{driver_id}', function(string $driver_id) {
-    $driver = Driver::findOrFail($driver_id);
-    $builder = Automobile::where('driver_id', $driver_id)->orWhereNull('driver_id');
+Route::get('drivers/automobiles/assign/{driver}', function(Driver $driver) {
+    $builder = Automobile::where('driver_id', $driver->id)->orWhereNull('driver_id');
     if (!$driver->can_drive_manual) {
         $builder->where('automatic', true);
     }
@@ -42,11 +42,10 @@ Route::get('drivers/automobiles/assign/{driver_id}', function(string $driver_id)
 Route::resource('drivers', DriverController::class)
     ->middleware(['auth', 'verified']);
 
+Route::post('automobiles/drivers/assign/{automobile}', [AutomobileController::class, 'assignDriver'])->name('automobiles.drivers.assign')->middleware(['auth', 'verified']);
 Route::get('automobiles._automobile', [AutomobileController::class, 'show'])->name('automobiles._automobile')->middleware(['auth', 'verified']);
-Route::get('automobiles/driver/assign/{automobile_id}', function(string $automobile_id) {
 
-    $automobile = Automobile::findOrFail($automobile_id);
-
+Route::get('automobiles/driver/assign/{automobile}', function(Automobile $automobile) {
     $builder = Driver::query();
     if (!$automobile->automatic) {
         $builder->where('can_drive_manual', true);

@@ -1,10 +1,10 @@
 <x-app-layout :title="__('Automobile Info')">
     <x-slot name="header">
         <h2 class="flex items-center space-x-1 font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            <x-breadcrumbs :links="[route('automobiles.index') => __('automobiles'), route('automobiles.show', $automobile) => __($automobile->name), __('Assign Automobiles')]" />
+            <x-breadcrumbs :links="[route('automobiles.index') => __('automobiles'), route('automobiles.show', $automobile) => __($automobile->name), __('Assign Driver')]" />
         </h2>
     </x-slot>
-    <form action="{{  route('automobile.drivers.assign', ['automobile_id' => $automobile->id]) }}" method="POST" class="w-full">
+    <form action="{{  route('automobiles.drivers.assign', ['automobile' => $automobile->id]) }}" method="POST" class="w-full">
         @csrf
             <div class="py-12">
                 @if(isset($drivers) && $drivers->count())
@@ -17,9 +17,9 @@
                                         <li class="p-4 hover:bg-blue-950">
                                             <div class="flex">
                                                 <div class="mx-3">
-                                                    <input class="form-check-input" type="checkbox" name="driver" value="{{ $driver->id }}"
-                                                    id="automobile{{ $automobile->id }}"
-                                                    {{ $automobile->id === $driver->id ? 'checked' : '' }}>
+                                                    <input class="form-check-input" type="checkbox" name="driver_id" value="{{ $driver->id }}"
+                                                        id="automobile{{ $automobile->id }}"
+                                                        {{ $automobile->id === $driver->id ? 'checked' : '' }}>
                                                 </div>
                                                 <div class="flex-shrink-0">
                                                     <img class="w-40 h-40 rounded-full" src="{{ $driver->avatar_url }}" alt="">

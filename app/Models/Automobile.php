@@ -24,4 +24,15 @@ class Automobile extends Model
     {
         return $this->belongsTo(Driver::class);
     }
+
+    public function unassignedDriverDueToTransmissionType()
+    {
+        return false;
+        if ($this->wasChanged('automatic') && !$this->automatic && !$this->driver->can_drive_manual) {
+           $this->driver_id = null;
+           $this->save();
+           return true;
+        }
+        return false;
+    }
 }

@@ -7,7 +7,7 @@
  
     <div class="py-12">
         <div class="max-w-2xl mx-auto sm:px-6 lg:px-8 space-y-6">
-            @include('drivers.partials.new-driver-trigger')
+            @include('partials.create-trigger')
             <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
                 <div class="max-w-xl mx-auto">
                     <ul id="drivers" role="list" class="divide-y divide-gray-100">

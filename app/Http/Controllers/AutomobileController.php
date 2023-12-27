@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Automobile;
+use App\Models\Driver;
 use Illuminate\Http\Request;
 
 class AutomobileController extends Controller
@@ -22,7 +23,9 @@ class AutomobileController extends Controller
      */
     public function create()
     {
-        //
+        return view('automobiles.create', [
+            'drivers' => Driver::where('can_drive_manual', true)->get()
+        ]);
     }
 
     /**
@@ -30,7 +33,21 @@ class AutomobileController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validatedData = $request->validate([
+            'make'                  => ['required', 'max:255'],
+            'model'                 => ['required', 'max:255'],
+            'number_of_cylinders'   => ['required', 'integer', 'min:4', 'max:12'],
+            'year'                  => ['required', 'integer', 'min:1900', 'max:2023'],
+            'automatic'             => ['required', 'boolean'],
+            'driver_id'             => ['nullable', 'exists:drivers,id']
+        ]);
+
+        $automobile = Automobile::create($validatedData);
+        $automobile->setRandomUnsplashAvatar();
+
+        return redirect()->route('automobiles.show', [
+            'automobile' => $automobile
+        ])->with('notice', __('Automobile created.'));
     }
 
     /**
@@ -48,7 +65,16 @@ class AutomobileController extends Controller
      */
     public function edit(Automobile $automobile)
     {
-        //
+        $drivers = Driver::query();
+
+        if (!$automobile->automatic) {
+            $drivers->where('can_drive_manual', true);
+        }
+
+        return view('automobiles.edit', [
+            'automobile' => $automobile->load('driver'),
+            'drivers' => $drivers->get()
+        ]);
     }
 
     /**
@@ -56,7 +82,22 @@ class AutomobileController extends Controller
      */
     public function update(Request $request, Automobile $automobile)
     {
-        //
+        $validatedData = $request->validate([
+            'make'                  => ['required', 'max:255'],
+            'model'                 => ['required', 'max:255'],
+            'number_of_cylinders'   => ['required', 'integer', 'min:4', 'max:12'],
+            'year'                  => ['required', 'integer', 'min:1900', 'max:2023'],
+            'automatic'             => ['required', 'boolean'],
+            'driver_id'             => ['nullable', 'exists:drivers,id']
+        ]);
+
+        $automobile->update($validatedData);
+
+        $driverUnassignedNotice = $automobile->unassignedDriverDueToTransmissionType() ? __('Driver unassigned due to transmission type.') : '';
+
+        return redirect()->route('automobiles.show', [
+            'automobile' => $automobile
+        ])->with('notice',  __('Driver updated.') . ' ' . $driverUnassignedNotice); 
     }
 
     /**
@@ -64,6 +105,24 @@ class AutomobileController extends Controller
      */
     public function destroy(Automobile $automobile)
     {
-        //
+        $automobile->delete();
+
+        return redirect()->route('automobiles.index')->with('notice', __('Automobile deleted.'));
+    }
+
+    public function assignDriver(Request $request, string $automobileId)
+    {
+        $automobile = Automobile::findOrFail($automobileId);
+
+        $validatedData = $request->validate([
+            'driver_id' => ['required', 'exists:drivers,id']
+        ]);
+
+        $automobile->driver_id = $validatedData['driver_id'];
+        $automobile->save();
+
+        return redirect()->route('automobiles.show', [
+            'automobile' => $automobile
+        ])->with('notice', __('Driver assigned.'));
     }
 }
