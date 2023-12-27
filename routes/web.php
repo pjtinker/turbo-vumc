@@ -27,6 +27,7 @@ Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
+Route::get('drivers/get_driver_select', [DriverController::class, 'getDriverSelect'])->name('drivers.index')->middleware(['auth', 'verified']);
 Route::get('drivers._driver', [DriverController::class, 'show'])->name('drivers._driver')->middleware(['auth', 'verified']);
 Route::post('drivers/automobiles/assign/{driver_id}', [DriverController::class, 'assignAutomobile'])->name('drivers.automobiles.assign')->middleware(['auth', 'verified']);
 
@@ -42,6 +43,7 @@ Route::get('drivers/automobiles/assign/{driver_id}', function(string $driver_id)
 Route::resource('drivers', DriverController::class)
     ->middleware(['auth', 'verified']);
 
+Route::post('automobiles/drivers/assign/{automobile_id}', [AutomobileController::class, 'assignDriver'])->name('automobiles.drivers.assign')->middleware(['auth', 'verified']);
 Route::get('automobiles._automobile', [AutomobileController::class, 'show'])->name('automobiles._automobile')->middleware(['auth', 'verified']);
 Route::get('automobiles/driver/assign/{automobile_id}', function(string $automobile_id) {
 

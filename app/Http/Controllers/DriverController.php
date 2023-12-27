@@ -19,6 +19,20 @@ class DriverController extends Controller
         ]);
     }
 
+    public function getDriverSelect(Request $request, Automobile $automobile)
+    {
+        $builder = Driver::query();
+        $isManual = $request->query('isManual') === 'true';
+        $selectedDriverId = $request->query('selectedDriverId', '');
+        if ($isManual == true) {
+            $builder->where('can_drive_manual', true);
+        }
+
+        return view('drivers.partials.driver_select', [
+            'drivers' => $builder->get(),
+            'currentDriverId' => $selectedDriverId
+        ]);
+    }
     /**
      * Show the form for creating a new resource.
      */

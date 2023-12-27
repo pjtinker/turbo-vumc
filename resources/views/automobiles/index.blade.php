@@ -20,11 +20,22 @@
                                     <div class="ml-3">
                                         <p class="text-sm font-medium text-white">
                                             {{ $automobile->make}}
+                                            <span class="text-sm text-gray-500">
+                                                {{ $automobile->model }}
+                                            </span>
                                         </p>
-                                        <p class="text-sm text-gray-500">
-                                            {{ $automobile->model }}
-                                        </p>
+                                        @if (isset($automobile->driver))
+                                            <div class="my-2">
+                                                <p class="text-sm font-medium text-white">
+                                                    Current driver: 
+                                                    <a href="{{ route('drivers.show', $automobile->driver) }}" class="text-sm text-gray-500">
+                                                        {{ $automobile->driver->name}}
+                                                    </a>
+                                                </p>
+                                            </div>
+                                        @endif
                                     </div>
+
                                     <div class="ml-auto">
                                         <a href="{{ route('automobiles.show', $automobile) }}" class="text-sm text-gray-500">
                                             View
