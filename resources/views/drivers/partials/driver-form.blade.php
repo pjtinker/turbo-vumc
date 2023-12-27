@@ -1,4 +1,3 @@
-{{-- <turbo-frame id="{{ isset($driver) ? 'driver_edit_' . $driver->id : 'driver_edit' }}" > --}}
 <form action="{{ isset($driver) ? route('drivers.update', $driver->id) : route('drivers.store') }}" method="POST" class="w-full">
     @csrf
         @if(isset($driver))
@@ -43,4 +42,3 @@
         </x-primary-button>
     </div>
 </form>
-{{-- </turbo-frame> --}}

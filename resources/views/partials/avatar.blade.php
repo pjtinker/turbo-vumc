@@ -1,13 +1,15 @@
 @props(['type' => 'driver', 'item' => null])
 
 @php
-    switch($type) {
-        case 'driver':
-            $name = $item->name;
-            break;
-        case 'automobile':
-            $name = $item->make . ' ' . $item->model;
-            break; 
+    if(isset($item)) {
+        switch($type) {
+            case 'driver':
+                $name = $item->name;
+                break;
+            case 'automobile':
+                $name = $item->make . ' ' . $item->model;
+                break; 
+        }
     }
 @endphp
 

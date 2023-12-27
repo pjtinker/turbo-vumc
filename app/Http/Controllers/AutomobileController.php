@@ -23,7 +23,9 @@ class AutomobileController extends Controller
      */
     public function create()
     {
-        //
+        return view('automobiles.create', [
+            'drivers' => Driver::where('can_drive_manual', true)->get()
+        ]);
     }
 
     /**
@@ -31,7 +33,21 @@ class AutomobileController extends Controller
      */
     public function store(Request $request)
     {
-//
+        $validatedData = $request->validate([
+            'make'                  => ['required', 'max:255'],
+            'model'                 => ['required', 'max:255'],
+            'number_of_cylinders'   => ['required', 'integer', 'min:4', 'max:12'],
+            'year'                  => ['required', 'integer', 'min:1900', 'max:2023'],
+            'automatic'             => ['required', 'boolean'],
+            'driver_id'             => ['nullable', 'exists:drivers,id']
+        ]);
+
+        $automobile = Automobile::create($validatedData);
+        $automobile->setRandomUnsplashAvatar();
+        
+        return redirect()->route('automobiles.show', [
+            'automobile' => $automobile
+        ])->with('notice', __('Automobile created.'));
     }
 
     /**
