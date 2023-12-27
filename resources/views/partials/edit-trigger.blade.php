@@ -6,14 +6,14 @@
             $editRoute = 'drivers.edit';
             $assignedRoute = 'drivers.automobiles.assign';
             $deleteRoute = 'drivers.destroy';
-            $id = 'driver_id';
+            $id = 'driver';
             $actionNoun = 'Automobiles';
             break;
         case "App\Models\Automobile":
             $editRoute = 'automobiles.edit';
             $assignedRoute = 'automobile.drivers.assign';
             $deleteRoute = 'automobiles.destroy';
-            $id = 'automobile_id';
+            $id = 'automobile';
             $actionNoun = 'Driver';
             break;
     }
@@ -32,7 +32,7 @@
 
             <x-slot name="content">
                 <x-dropdown-link href="{{ route($editRoute, $item) }}">{{ __('Edit') }}</x-dropdown-link>
-                {{-- <x-dropdown-link href="{{ route($assignedRoute, [$id => $item->id]) }}">{{ __('Assign ' . $actionNoun) }}</x-dropdown-link> --}}
+                <x-dropdown-link href="{{ route($assignedRoute, [$id => $item->id]) }}">{{ __('Assign ' . $actionNoun) }}</x-dropdown-link>
                 <form action="{{ route($deleteRoute, $item) }}" method="POST">
                     @method('DELETE')
                     <x-dropdown-danger-button type="submit">{{ __('Delete') }}</x-dropdown-danger-button>

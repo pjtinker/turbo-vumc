@@ -4,7 +4,7 @@
             <x-breadcrumbs :links="[route('automobiles.index') => __('automobiles'), route('automobiles.show', $automobile) => __($automobile->name), __('Assign Driver')]" />
         </h2>
     </x-slot>
-    <form action="{{  route('automobiles.drivers.assign', ['automobile_id' => $automobile->id]) }}" method="POST" class="w-full">
+    <form action="{{  route('automobiles.drivers.assign', ['automobile' => $automobile->id]) }}" method="POST" class="w-full">
         @csrf
             <div class="py-12">
                 @if(isset($drivers) && $drivers->count())
@@ -18,8 +18,8 @@
                                             <div class="flex">
                                                 <div class="mx-3">
                                                     <input class="form-check-input" type="checkbox" name="driver_id" value="{{ $driver->id }}"
-                                                    id="automobile{{ $automobile->id }}"
-                                                    {{ $automobile->id === $driver->id ? 'checked' : '' }}>
+                                                        id="automobile{{ $automobile->id }}"
+                                                        {{ $automobile->id === $driver->id ? 'checked' : '' }}>
                                                 </div>
                                                 <div class="flex-shrink-0">
                                                     <img class="w-40 h-40 rounded-full" src="{{ $driver->avatar_url }}" alt="">

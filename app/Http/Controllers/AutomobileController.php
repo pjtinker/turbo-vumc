@@ -44,7 +44,7 @@ class AutomobileController extends Controller
 
         $automobile = Automobile::create($validatedData);
         $automobile->setRandomUnsplashAvatar();
-        
+
         return redirect()->route('automobiles.show', [
             'automobile' => $automobile
         ])->with('notice', __('Automobile created.'));
@@ -105,7 +105,9 @@ class AutomobileController extends Controller
      */
     public function destroy(Automobile $automobile)
     {
-        //
+        $automobile->delete();
+
+        return redirect()->route('automobiles.index')->with('notice', __('Automobile deleted.'));
     }
 
     public function assignDriver(Request $request, string $automobileId)

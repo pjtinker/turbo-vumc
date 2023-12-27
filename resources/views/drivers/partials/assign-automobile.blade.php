@@ -4,7 +4,7 @@
             <x-breadcrumbs :links="[route('drivers.index') => __('Drivers'), route('drivers.show', $driver) => __($driver->name), __('Assign Automobiles')]" />
         </h2>
     </x-slot>
-    <form action="{{  route('drivers.automobiles.assign', ['driver_id' => $driver->id]) }}" method="POST" class="w-full">
+    <form action="{{  route('drivers.automobiles.assign', ['driver' => $driver->id]) }}" method="POST" class="w-full">
         @csrf
             <div class="py-12">
                 @if(isset($automobiles) && $automobiles->count())

@@ -124,9 +124,8 @@ class DriverController extends Controller
         return redirect()->route('drivers.index')->with('notice', __('Driver deleted.'));
     }
 
-    public function assignAutomobile(Request $request, string $driverId)
+    public function assignAutomobile(Request $request, Driver $driver)
     {
-
         $driver = Driver::findOrFail($driverId);
 
         if ($driver->automobiles()->count() > 0) {
