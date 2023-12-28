@@ -48,8 +48,7 @@ class DriverRepository implements DriverRepositoryInterface
         if (!empty($automobileIds)) {
             // I'm using Laravel methods here, but you could also use a foreach loop
             // and manually assign each automobile to the driver. e.g.
-            // foreach ($automobileIds as $automobileId) {
-            //     $automobile = Automobile::find($automobileId);
+            // foreach (Automobile::whereIn('id', $automobileIds) as $automobile) {
             //     $automobile->driver()->associate($driver)->save();
             // }
             $driver->automobileIds()->saveMany(Automobile::findMany($automobiles));
