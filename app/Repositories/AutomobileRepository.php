@@ -8,11 +8,24 @@ use Illuminate\Support\Collection;
 
 class AutomobileRepository implements AutomobileRepositoryInterface
 {
+    /**
+     * Create a new automobile.
+     * 
+     * @param array $data
+     * @return Automobile
+     */
     public static function create(array $data): Automobile
     {
         return Automobile::create($data);
     }
 
+    /**
+     * Update an automobile and unassign the driver if the driver can no longer drive manual.
+     * 
+     * @param Automobile $automobile
+     * @param array $data
+     * @return array
+     */
     public static function update(Automobile $automobile, array $data): Array
     {
         $automobile->update($data);
@@ -24,12 +37,25 @@ class AutomobileRepository implements AutomobileRepositoryInterface
         ];
     }
 
+    /**
+     * Assign a driver to an automobile.
+     * 
+     * @param Automobile $automobile
+     * @param string $driver_id
+     * @return bool
+     */
     public static function assignDriver(Automobile $automobile, string $driver_id): bool
     {
         $driver = Driver::find($driver_id);
         return $automobile->driver()->associate($driver)->save();
     }
 
+    /**
+     * Get all automobiles that are available for a driver to drive.
+     * 
+     * @param Driver $driver
+     * @return Collection
+     */
     public static function getAvailableAutomobiles(Driver $driver): Collection
     {
         $builder = Automobile::where(function ($query) use ($driver) {

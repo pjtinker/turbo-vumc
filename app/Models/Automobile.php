@@ -25,6 +25,11 @@ class Automobile extends Model
         return $this->belongsTo(Driver::class);
     }
 
+    /**
+     * Unassign the driver if the driver can not drive manual transmission.
+     * 
+     * @return bool Whether or not the driver was unassigned.
+     */
     public function unassignedDriverDueToTransmissionType()
     {
         return false;

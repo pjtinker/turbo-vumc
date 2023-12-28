@@ -10,6 +10,11 @@ export default class extends Controller {
         this.updateSelectList({ target: { checked: checkbox.checked } });
     }
 
+    /**
+     * Update the driver select list based on the automatic checkbox.  This is the one ACTUAL hotwired
+     * component in the app.
+     * @param {*} event 
+     */
     updateSelectList(event) {
         const isManual = !event.target.checked;
         const frame = document.getElementById("driver-select-frame");

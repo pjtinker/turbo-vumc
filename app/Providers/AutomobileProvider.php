@@ -4,6 +4,12 @@ namespace App\Providers;
 
 use Faker\Provider\Base;
 
+/**
+ * Used when generating fake data for automobiles.
+ * 
+ * This could be refactored to use as a validation tool for creation and updating of automobiles.
+ */
+
 class AutomobileProvider extends Base
 {
     protected static $carMakes = [

@@ -77,6 +77,12 @@ class DriverRepository implements DriverRepositoryInterface
         return $builder->get();
     }
 
+    /**
+     * Get all drivers that are available to be assigned to an automobile, based on the automobile's transmission type.
+     * 
+     * @param array $data
+     * @return array
+     */
     public static function getDriverSelect(array $data): Array
     {
         $builder = Driver::query();

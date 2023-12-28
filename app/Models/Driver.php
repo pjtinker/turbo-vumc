@@ -33,7 +33,7 @@ class Driver extends Model
          * I try to be wary of using observers, but in this case it's the best option to ensure
          * that the automobile is unassociated if the driver is deleted.
          * 
-         * I could also have added the can_drive_manual check here, but I left it as is to show other approaches.
+         * I could also have added the can_drive_manual check here.
          */
         static::deleted(function ($driver) {
             $driver->automobiles()->update(['driver_id' => null]);
@@ -52,6 +52,8 @@ class Driver extends Model
 
     /**
      * Helper method to get a string of the automobiles a driver is currently driving.
+     * 
+     * @return string The string of automobiles.
      */
     public function getCurrentlyDrivingStringAttribute()
     {
@@ -70,7 +72,9 @@ class Driver extends Model
     }
 
     /**
-     * Helper method to get a string of the automobiles a driver is currently driving.
+     * Helper method unassign any manual automobiles if the driver can no longer drive manual.
+     * 
+     * @return int The number of automobiles unassigned.
      */
     public function unassignManualAutomobiles()
     {

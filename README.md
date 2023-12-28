@@ -17,7 +17,7 @@ Couple of caveats:
 Implementation notes:
 * I added two approaches for assigning a driver to an automobile to give you some insight into frontend and backend business logic.  
 * I added the avatars to give myself an opportunity to use a trait and some reusable code betwixt models (to help check off some OOP approaches).  You'll need an Unsplash API key and secret (they're free) added to the .env as <code>UNSPLASH_ACCESS_KEY</code> and <code>UNSPLASH_PRIVATE_KEY</code> if you build locally.  When editing an existing automobile or driver, if you click the avatar image a new random image will be pulled.
-* I used a repository pattern with a service layer in the backend.  I like this pattern for models that require business logic in their handling as it gives you one contract to follow when performing CRUD actions and a separate layer in which to apply business logic.
+* I used a repository pattern with a service layer in the backend.  I like this pattern for models that require business logic in their handling as it gives you one contract to follow when performing CRUD actions and a separate layer in which to apply business logic.  This provides flexibility to use throughout the app without duplication of code.
 
 Local Installation
 * 1. Clone the project
@@ -28,5 +28,6 @@ Local Installation
 * 6. Run <code>php artisan serve</code>
 * 7. Go to link localhost:8000
 
-Sail share
-* I can also deploy the code to a public site via <code>sail share</code> if you'd rather not go through the local installation.  
+Sail
+* I can deploy the code to a public site via <code>sail share</code> if you'd rather not go through the local installation. 
+* I could also share my docker-compose file and you could run in Sail locally.   

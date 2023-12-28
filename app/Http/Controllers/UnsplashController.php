@@ -31,7 +31,7 @@ class UnsplashController extends Controller
         $model->save();
     }
 
-    public function getRandomImageThumbnail(Request $request, string $type = 'driver')
+    public function getRandomImageThumbnail(Request $request, ?string $type)
     {
         return response()->json([
             'avatar_url' => (new UnsplashService)->getRandomImageThumbnail($type)

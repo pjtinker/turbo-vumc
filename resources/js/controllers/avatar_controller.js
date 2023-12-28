@@ -4,6 +4,12 @@ export default class extends Controller {
     static targets = ['image', 'imageInput'];
     static values = { type: String, editable: Boolean };
 
+    /**
+     * Updates the thumbnail image for the item type
+     * 
+     * @param {*} event 
+     * @returns 
+     */
     updateThumbnail(event) {
         event.preventDefault();
         const itemType = this.typeValue;
@@ -13,10 +19,9 @@ export default class extends Controller {
             return;
         }
 
-        fetch(`/unsplash/get-random-image-thumbnail?type=${itemType}`)
+        fetch(`/unsplash/get-random-image-thumbnail/${itemType}`)
             .then(response => response.json())
             .then(data => {
-                console.log('data: ', data);
                 if (data.avatar_url) {
                     this.imageTarget.src = data.avatar_url;
                     this.imageInputTarget.value = data.avatar_url;
