@@ -1,7 +1,7 @@
 <x-app-layout :title="__('Automobile Info')">
     <x-slot name="header">
         <h2 class="flex items-center space-x-1 font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            <x-breadcrumbs :links="[route('automobiles.index') => __('automobiles'), route('automobiles.show', $automobile) => __($automobile->name), __('Assign Driver')]" />
+            <x-breadcrumbs :links="[route('automobiles.index') => __('Automobiles'), route('automobiles.show', $automobile) => __($automobile->make . ' ' . $automobile->model), __('Assign Driver')]" />
         </h2>
     </x-slot>
     <form action="{{  route('automobiles.drivers.assign', ['automobile' => $automobile->id]) }}" method="POST" class="w-full">
@@ -17,13 +17,12 @@
                                         <li class="p-4 hover:bg-blue-950">
                                             <div class="flex">
                                                 <div class="mx-3">
-                                                    <input class="form-check-input" type="checkbox" name="driver_id" value="{{ $driver->id }}"
+                                                    <input class="form-check-input" type="radio" name="driver_id" value="{{ $driver->id }}"
                                                         id="automobile{{ $automobile->id }}"
-                                                        {{ $automobile->id === $driver->id ? 'checked' : '' }}>
+                                                        {{ $automobile->driver_id === $driver->id ? 'checked' : '' }}>
                                                 </div>
-                                                <div class="flex-shrink-0">
-                                                    <img class="w-40 h-40 rounded-full" src="{{ $driver->avatar_url }}" alt="">
-                                                </div>
+                                                @include('partials.avatar', ['item' => $driver, 'type' => 'driver', 'editable' => 'false'])
+
                                                 <div class="ml-3">
                                                     <p class="text-sm font-medium text-white">
                                                         {{ $driver->name}}

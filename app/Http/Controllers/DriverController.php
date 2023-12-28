@@ -5,34 +5,30 @@ namespace App\Http\Controllers;
 use App\Models\Driver;
 use App\Traits\HasUnsplashAvatar;
 use App\Models\Automobile;
+use App\Repositories\AutomobileRepository;
+use App\Repositories\DriverRepository;
+use App\Services\DriverService;
 use Illuminate\Http\Request;
 
 class DriverController extends Controller
 {
+    
+    protected $driverService;
+
+    public function __construct(DriverService $driverService)
+    {
+        $this->driverService = $driverService;
+    }
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
         return view('drivers.index', [
-            'drivers' => Driver::with('automobiles')->latest()->get()
+            'drivers' => Driver::with('automobiles')->orderBy('updated_at', 'desc')->get()
         ]);
     }
 
-    public function getDriverSelect(Request $request, Automobile $automobile)
-    {
-        $builder = Driver::query();
-        $isManual = $request->query('isManual') === 'true';
-        $selectedDriverId = $request->query('selectedDriverId', '');
-        if ($isManual == true) {
-            $builder->where('can_drive_manual', true);
-        }
-
-        return view('drivers.partials.driver_select', [
-            'drivers' => $builder->get(),
-            'currentDriverId' => $selectedDriverId
-        ]);
-    }
     /**
      * Show the form for creating a new resource.
      */
@@ -47,16 +43,13 @@ class DriverController extends Controller
     public function store(Request $request)
     {
         $validatedData = $request->validate([
-            'name' => ['required', 'max:255'],
-            'email' => ['required', 'unique:drivers,email', 'max:255'],
-            'years_of_experience' => ['required', 'integer', 'min:0'],
-            'can_drive_manual' => ['required', 'boolean']
+            'name'                  => ['required', 'max:255'],
+            'email'                 => ['required', 'unique:drivers,email', 'max:255'],
+            'years_of_experience'   => ['required', 'integer', 'min:0'],
+            'can_drive_manual'      => ['required', 'boolean']
         ]);
 
-        $driver = Driver::create($validatedData);
-        $driver->setRandomUnsplashAvatar();
-
-        $html = view('drivers.partials.details', compact('driver'))->render();
+        $driver = $this->driverService->createDriver($validatedData);
 
         return redirect()->route('drivers.show', [
             'driver' => $driver,
@@ -91,21 +84,14 @@ class DriverController extends Controller
     public function update(Request $request, Driver $driver)
     {
         $validatedData = $request->validate([
-            'name' => ['required', 'max:255'],
-            'email' => ['required', 'unique:drivers,email,' . $driver->id . ',id', 'max:255'],
-            'years_of_experience' => ['required', 'integer', 'min:0'],
-            'can_drive_manual' => ['required', 'boolean']
+            'name'                  => ['required', 'max:255'],
+            'email'                 => ['required', 'unique:drivers,email,' . $driver->id . ',id', 'max:255'],
+            'years_of_experience'   => ['required', 'integer', 'min:0'],
+            'can_drive_manual'      => ['required', 'boolean'],
+            'avatar_url'            => ['nullable', 'url', 'max:255']
         ]);
 
-        $driver->update($validatedData);
-        $count = $driver->unassignManualAutomobiles();
-
-        $autoChangeNotice = $count > 0
-            ? __('Driver can no longer drive manual - :count manual :vehicle unassigned.', [
-                'count' => $count,
-                'vehicle' => $count > 1 ? 'vehicles were' : 'vehicle was'
-            ])
-            : '';
+        list('driver' => $driver, 'autoChangeNotice' => $autoChangeNotice) = $this->driverService->updateDriver($driver, $validatedData);
 
         return redirect()->route('drivers.show', [
             'driver' => $driver,
@@ -118,33 +104,57 @@ class DriverController extends Controller
      */
     public function destroy(Driver $driver)
     {
-        $driver->automobiles()->update(['driver_id' => null]);
-        $driver->delete();
+        $driver->destroy();
 
         return redirect()->route('drivers.index')->with('notice', __('Driver deleted.'));
     }
 
+    public function getAssignAutomobile(Driver $driver)
+    {
+        $automobiles = AutomobileRepository::getAvailableAutomobiles($driver);
+
+        return view('drivers.partials.assign-automobile', [
+            'driver' => $driver, 
+            'automobiles' => $automobiles
+        ]);
+    }
+    /**
+     * Assign an automobile to a driver.
+     * @param Request $request
+     * @param Driver $driver
+     */
     public function assignAutomobile(Request $request, Driver $driver)
     {
-        $driver = Driver::findOrFail($driverId);
-
-        if ($driver->automobiles()->count() > 0) {
-            $driver->automobiles()->update(['driver_id' => null]);
-        }
-
         $validatedData = $request->validate([
-            'automobiles' => ['array'],
+            'automobiles'   => ['array'],
             'automobiles.*' => ['exists:automobiles,id']
         ]);
         
+        if ($driver->automobiles()->exists()) {
+            $driver->automobiles()->update(['driver_id' => null]);
+        }
+        
         $automobiles = $request->get('automobiles', []);
-        if (count($automobiles)) {
+        if (!empty($automobiles)) {
             $driver->automobiles()->saveMany(Automobile::findMany($automobiles));
         }
 
         return redirect()->route('drivers.show', [
-            'driver' => $driver,
-            'automobiles' => $driver->automobiles
-        ])->with('notice', __('Automobile assigned.'));
+            'driver'        => $driver,
+            'automobiles'   => $driver->automobiles
+        ])->with('notice', __('Automobile' . (count($automobiles) > 1 ? 's' : '') . ' assigned.'));
+    }
+
+    /**
+     * Get the driver select partial.  Filter available drivers by transmission type.
+     * @param Request $request
+     */
+    public function getDriverSelect(Request $request)
+    {
+        ['drivers' => $drivers, 'currentDriverId' => $currentDriverId] = DriverRepository::getDriverSelect($request->all());
+        return view('drivers.partials.driver_select', [
+            'drivers'           => $drivers,
+            'currentDriverId'   => $currentDriverId
+        ]);
     }
 }

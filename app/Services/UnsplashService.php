@@ -19,7 +19,7 @@ class UnsplashService
     {
         $queryParameters = [
             'client_id' => env('UNSPLASH_ACCESS_KEY'),
-            'count' => $count, // Get a single random image
+            'count' => $count,
         ];
 
         if ($keyword) {

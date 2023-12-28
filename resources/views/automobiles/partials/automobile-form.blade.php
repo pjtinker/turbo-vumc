@@ -5,7 +5,7 @@
     @endif
     <div>
         <div class="grid grid-cols-1 gap-6 mt-4 sm:grid-cols-1">
-            @include('partials.avatar', ['item' => isset($automobile) ? $automobile : null])
+            @include('partials.avatar', ['item' => isset($automobile) ? $automobile : null, 'type' => 'automobiles', 'editable' => 'true'])
             <div>
                 <x-input-label class="text-gray-700 text-gray-900" for="make">Make</x-input-label>
                 <input id="make" name="make" type="text" value="{{ isset($automobile) ? $automobile->make : old('make') }}" class="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md bg-gray-800 text-black border-gray-600 focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40 focus:border-blue-300 focus:outline-none focus:ring">
@@ -32,16 +32,14 @@
             <div data-controller="automobile" data-automobile-drivers-value="{{ $drivers }}"> 
                 <div>
                     <x-input-label class="text-gray-700 text-gray-900" for="automatic">Automatic</x-input-label>
-                    <input type="hidden" name="automatic" value="0">
+                    <input type="hidden" name="automatic" value="0" >
                     <input id="automatic" 
                         value="1" 
                         name="automatic" 
                         type="checkbox"
                         data-action="change->automobile#updateSelectList"
                         class="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md bg-gray-800 text-black border-gray-600 focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40 focus:border-blue-300 focus:outline-none focus:ring"
-                        @if (isset($automobile) && $automobile->automatic)
-                            checked
-                        @endif
+                        {{ old('automatic', (isset($automobile) && $automobile->automatic ? '1' : '')) === '1' ? 'checked' : '' }}
                     >
                 </div>
 

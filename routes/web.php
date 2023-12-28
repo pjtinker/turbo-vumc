@@ -4,6 +4,8 @@ use App\Http\Controllers\DriverController;
 use App\Http\Controllers\AutomobileController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProfilePasswordController;
+use App\Http\Controllers\UnsplashController;
+use App\Repositories\AutomobileRepository;
 use Illuminate\Support\Facades\Route;
 use App\Models\Automobile;
 use App\Models\Driver;
@@ -27,17 +29,13 @@ Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::get('drivers/get_driver_select', [DriverController::class, 'getDriverSelect'])->name('drivers.index')->middleware(['auth', 'verified']);
+Route::get('drivers/get_driver_select', [DriverController::class, 'getDriverSelect'])->name('drivers.get-driver-select')->middleware(['auth', 'verified']);
 Route::get('drivers._driver', [DriverController::class, 'show'])->name('drivers._driver')->middleware(['auth', 'verified']);
 Route::post('drivers/automobiles/assign/{driver}', [DriverController::class, 'assignAutomobile'])->name('drivers.automobiles.assign')->middleware(['auth', 'verified']);
 
-Route::get('drivers/automobiles/assign/{driver}', function(Driver $driver) {
-    $builder = Automobile::where('driver_id', $driver->id)->orWhereNull('driver_id');
-    if (!$driver->can_drive_manual) {
-        $builder->where('automatic', true);
-    }
-    return view('drivers.partials.assign-automobile', ['driver' => $driver, 'automobiles' => $builder->get()]);
-})->name('drivers.automobiles.assign')->middleware(['auth', 'verified']);
+Route::get('drivers/automobiles/assign/{driver}', [DriverController::class, 'getAssignAutomobile'])
+    ->name('drivers.automobiles.assign')
+    ->middleware(['auth', 'verified']);
 
 Route::resource('drivers', DriverController::class)
     ->middleware(['auth', 'verified']);
@@ -50,12 +48,13 @@ Route::get('automobiles/driver/assign/{automobile}', function(Automobile $automo
     if (!$automobile->automatic) {
         $builder->where('can_drive_manual', true);
     }
-
     return view('automobiles.partials.assign-driver', ['automobile' => $automobile, 'drivers' => $builder->get()]);
 })->name('automobile.drivers.assign')->middleware(['auth', 'verified']);
 
 Route::resource('automobiles', AutomobileController::class)
     ->middleware(['auth', 'verified']);
+Route::get('/unsplash/get-random-image-thumbnail/{type?}', [UnsplashController::class, 'getRandomImageThumbnail'])->name('unsplash.get-random-image-thumbnail')->middleware(['auth', 'verified']);
+Route::post('/unsplash/assign-random-image-thumbnail', [UnsplashController::class, 'assignRandomImageThumbnail'])->name('unsplash.assign-random-image-thumbnail')->middleware(['auth', 'verified']);
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');

@@ -14,7 +14,8 @@ class Driver extends Model
         'name',
         'email',
         'years_of_experience',
-        'can_drive_manual'
+        'can_drive_manual',
+        'avatar_url'
     ];
 
     protected $casts = [
@@ -26,6 +27,19 @@ class Driver extends Model
         'currently_driving_string'
     ];
     
+    protected static function booted()
+    {
+        /**
+         * I try to be wary of using observers, but in this case it's the best option to ensure
+         * that the automobile is unassociated if the driver is deleted.
+         * 
+         * I could also have added the can_drive_manual check here, but I left it as is to show other approaches.
+         */
+        static::deleted(function ($driver) {
+            $driver->automobiles()->update(['driver_id' => null]);
+        });
+    }
+
     public function automobiles()
     {
         return $this->hasMany(Automobile::class);
@@ -36,6 +50,9 @@ class Driver extends Model
         return $this->automobiles()->count();
     }
 
+    /**
+     * Helper method to get a string of the automobiles a driver is currently driving.
+     */
     public function getCurrentlyDrivingStringAttribute()
     {
         $automobiles = $this->automobiles;
@@ -52,6 +69,9 @@ class Driver extends Model
         };
     }
 
+    /**
+     * Helper method to get a string of the automobiles a driver is currently driving.
+     */
     public function unassignManualAutomobiles()
     {
         if ($this->wasChanged('can_drive_manual') && !$this->can_drive_manual) {

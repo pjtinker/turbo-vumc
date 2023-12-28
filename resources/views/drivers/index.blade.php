@@ -14,7 +14,7 @@
                         @foreach ($drivers as $driver)
                             <li class="p-4 hover:bg-blue-950">
                                 <div class="flex">
-                                    @include('partials.avatar', ['item' => $driver])
+                                    @include('partials.avatar', ['item' => $driver, 'type' => 'driver', 'editable' => 'false'])
                                     <div class="ml-3">
                                         <p class="text-sm font-medium text-white">
                                             {{ $driver->name}}

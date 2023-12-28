@@ -1,6 +1,6 @@
 <div>
     <div class="grid grid-cols-1 gap-6 mt-4 sm:grid-cols-1">
-        @include('partials.avatar', ['item' => $automobile, 'type' => 'automobile'])
+        @include('partials.avatar', ['item' => $automobile, 'type' => 'automobile', 'editable' => 'false'])
         <div>
             <x-input-label class="text-gray-700 text-gray-900" for="name">Make</x-input-label>
             <div class="mt-2 text-gray-700 bg-gray-100 border border-gray-200 rounded-md p-2">

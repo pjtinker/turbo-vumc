@@ -6,8 +6,8 @@
         <option value="">Select a Driver</option>
         @foreach ($drivers as $driver)
             <option value="{{ $driver->id }}"
-                    {{ $currentDriverId == $driver->id ? 'selected' : '' }}>
-                {{ $driver->name }}
+                    {{ old('driver_id', $currentDriverId) == $driver->id ? 'selected' : '' }}>
+                {{ $driver->name . ' ' . ($driver->can_drive_manual ? '(M)' : '(A)')}}
             </option>
         @endforeach
     </select>

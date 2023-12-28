@@ -6,18 +6,19 @@
     </x-slot>
     <div class="py-12">
         <div class="max-w-2xl mx-auto sm:px-6 lg:px-8 space-y-6">
+            <div class="text:lg text-gray-200">
+                <span>
+                    I left two methods for assigning a driver to an automobile. 
+                    The first is the traditional way of using a select list. When you open the dropdown ellipsis and select 'Edit', the driver field becomes a select list.
+                </br>
+                    The second is using radiobutton and a list of drivers. To test, open the dropdown ellipsis and select 'Assign Driver'.
+                </span>
+            </div>
             <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
                 @include('partials.edit-trigger', ['item' => $automobile])
-                {{-- <turbo-frame id="automobile_edit_{{ $automobile->id }}"> --}}
                     <div class="max-w-2xl mx-auto">
                         @include('automobiles.partials.details')
                     </div>
-                {{-- </turbo-frame> --}}         
-                <div class="max-w-2xl mx-auto">
-                    {{-- @if(isset($automobile->automobiles) && $automobile->automobiles->count()) --}}
-                        {{-- @include('automobiles.partials.list-automobiles', ['automobiles' => $automobile->automobiles]) --}}
-                    {{-- @endif --}}
-                </div>
             </div>
         </div>
     </div>

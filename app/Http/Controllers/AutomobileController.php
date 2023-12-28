@@ -4,17 +4,25 @@ namespace App\Http\Controllers;
 
 use App\Models\Automobile;
 use App\Models\Driver;
+use App\Repositories\AutomobileRepository;
+use App\Services\AutomobileService;
 use Illuminate\Http\Request;
 
 class AutomobileController extends Controller
 {
+    protected $automobileService;
+
+    public function __construct(AutomobileService $automobileService)
+    {
+        $this->automobileService = $automobileService;
+    }
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
         return view('automobiles.index', [
-            'automobiles' => Automobile::with('driver')->latest()->get()
+            'automobiles' => Automobile::with('driver')->orderBy('updated_at', 'desc')->get()
         ]);
     }
 
@@ -24,7 +32,7 @@ class AutomobileController extends Controller
     public function create()
     {
         return view('automobiles.create', [
-            'drivers' => Driver::where('can_drive_manual', true)->get()
+            'drivers' => Driver::query()->get()
         ]);
     }
 
@@ -37,13 +45,12 @@ class AutomobileController extends Controller
             'make'                  => ['required', 'max:255'],
             'model'                 => ['required', 'max:255'],
             'number_of_cylinders'   => ['required', 'integer', 'min:4', 'max:12'],
-            'year'                  => ['required', 'integer', 'min:1900', 'max:2023'],
+            'year'                  => ['required', 'integer', 'min:1900', 'max:2024'],
             'automatic'             => ['required', 'boolean'],
             'driver_id'             => ['nullable', 'exists:drivers,id']
         ]);
 
-        $automobile = Automobile::create($validatedData);
-        $automobile->setRandomUnsplashAvatar();
+        $automobile = $this->automobileService->createAutomobile($validatedData);
 
         return redirect()->route('automobiles.show', [
             'automobile' => $automobile
@@ -72,8 +79,8 @@ class AutomobileController extends Controller
         }
 
         return view('automobiles.edit', [
-            'automobile' => $automobile->load('driver'),
-            'drivers' => $drivers->get()
+            'automobile'    => $automobile->load('driver'),
+            'drivers'       => $drivers->get()
         ]);
     }
 
@@ -88,12 +95,11 @@ class AutomobileController extends Controller
             'number_of_cylinders'   => ['required', 'integer', 'min:4', 'max:12'],
             'year'                  => ['required', 'integer', 'min:1900', 'max:2023'],
             'automatic'             => ['required', 'boolean'],
-            'driver_id'             => ['nullable', 'exists:drivers,id']
+            'driver_id'             => ['nullable', 'exists:drivers,id'],
+            'avatar_url'            => ['nullable', 'url', 'max:255']
         ]);
 
-        $automobile->update($validatedData);
-
-        $driverUnassignedNotice = $automobile->unassignedDriverDueToTransmissionType() ? __('Driver unassigned due to transmission type.') : '';
+        list('automobile' => $automobile, 'driverUnassignedNotice' => $driverUnassignedNotice) = $this->automobileService->updateAutomobile($automobile, $validatedData);
 
         return redirect()->route('automobiles.show', [
             'automobile' => $automobile
@@ -110,17 +116,19 @@ class AutomobileController extends Controller
         return redirect()->route('automobiles.index')->with('notice', __('Automobile deleted.'));
     }
 
-    public function assignDriver(Request $request, string $automobileId)
+    /**
+     * Assign a driver to the specified resource.
+     * @param Request $request
+     * @param Automobile $automobile
+     */
+    public function assignDriver(Request $request, Automobile $automobile)
     {
-        $automobile = Automobile::findOrFail($automobileId);
-
         $validatedData = $request->validate([
             'driver_id' => ['required', 'exists:drivers,id']
         ]);
 
-        $automobile->driver_id = $validatedData['driver_id'];
-        $automobile->save();
-
+        AutomobileRepository::assignDriver($automobile, $validatedData['driver_id']);
+        
         return redirect()->route('automobiles.show', [
             'automobile' => $automobile
         ])->with('notice', __('Driver assigned.'));
